@@ -106,7 +106,8 @@ class Facebook extends BaseFacebook
     }
 
     $session_var_name = $this->constructSessionVariableName($key);
-    $_SESSION[$session_var_name] = $value;
+    //$_SESSION[$session_var_name] = $value;
+    $this->session->write($session_var_name, $value);
   }
 
   protected function getPersistentData($key, $default = false) {
@@ -116,8 +117,12 @@ class Facebook extends BaseFacebook
     }
 
     $session_var_name = $this->constructSessionVariableName($key);
-    return isset($_SESSION[$session_var_name]) ?
-      $_SESSION[$session_var_name] : $default;
+    $value = $this->session->read($session_var_name);
+    if($value === null) {
+      return $default;
+    } else {
+      return $value;
+    }
   }
 
   protected function clearPersistentData($key) {
@@ -127,7 +132,7 @@ class Facebook extends BaseFacebook
     }
 
     $session_var_name = $this->constructSessionVariableName($key);
-    unset($_SESSION[$session_var_name]);
+    $this->session->del($session_var_name);
   }
 
   protected function clearAllPersistentData() {

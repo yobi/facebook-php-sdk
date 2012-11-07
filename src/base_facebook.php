@@ -223,6 +223,7 @@ abstract class BaseFacebook
    * @param array $config The application configuration
    */
   public function __construct($config) {
+    $this->session = $config['session'];
     $this->setAppId($config['appId']);
     $this->setAppSecret($config['secret']);
     if (isset($config['fileUpload'])) {
@@ -510,6 +511,15 @@ abstract class BaseFacebook
   }
 
   /**
+   * clear user from session
+   */
+
+  public function clearUser() {
+    $this->clearPersistentData("user_id");
+    $this->user = null;
+  }
+
+  /**
    * Determines the connected user by first examining any signed
    * requests, then considering an authorization code, and then
    * falling back to any persistent store storing the user.
@@ -688,7 +698,7 @@ abstract class BaseFacebook
         $this->clearPersistentData('state');
         return $_REQUEST['code'];
       } else {
-        self::errorLog('CSRF state token does not match one provided.');
+        self::errorLog("CSRF state ".$this->state." token does not match one provided ".$_REQUEST['state'].".");
         return false;
       }
     }
